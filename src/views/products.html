@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Productos</title>
+</head>
+<body>
+    <h1>Lista de Productos</h1>
+    <div id="product-list"></div>
+
+    <script>
+        fetch('/api/products')
+            .then(response => response.json())
+            .then(data => {
+                const productList = document.getElementById('product-list');
+                data.payload.forEach(product => {
+                    const productItem = document.createElement('div');
+                    productItem.innerHTML = `<h2>${product.title}</h2><p>Precio: $${product.price}</p>`;
+                    productList.appendChild(productItem);
+                });
+            });
+    </script>
+</body>
+</html>

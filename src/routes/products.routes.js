@@ -72,3 +72,42 @@ module.exports = {
     products: products,
     router:router
 }
+
+let currentPage = 1;
+const limit = 10; // Número de productos por página
+
+const fetchProducts = async (page = 1) => {
+    const response = await fetch(`/api/products?limit=${limit}&page=${page}`);
+    const data = await response.json();
+    displayProducts(data.payload);
+    updatePagination(data);
+};
+
+const displayProducts = (products) => {
+    const container = document.getElementById('products-container');
+    container.innerHTML = ''; // Limpiar contenedor
+    products.forEach(product => {
+        const productElement = document.createElement('div');
+        productElement.innerHTML = `
+            <h2>${product.title}</h2>
+            <p>${product.description}</p>
+            <p>Precio: $${product.price}</p>
+            <button onclick="addToCart('${product.id}')">Agregar al carrito</button>
+        `;
+        container.appendChild(productElement);
+    });
+};
+
+const updatePagination = (data) => {
+    const currentPageElement = document.getElementById('currentPage');
+    currentPageElement.textContent = data.page;
+
+    document.getElementById('prevPage').disabled = !data.hasPrevPage;
+    document.getElementById('nextPage').disabled = !data.hasNextPage;
+
+    document.getElementById('prevPage').onclick = () => fetchProducts(data.prevPage);
+    document.getElementById('nextPage').onclick = () => fetchProducts(data.nextPage);
+};
+
+// Inicializar la carga de productos
+fetchProducts(currentPage);

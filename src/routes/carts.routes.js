@@ -60,3 +60,35 @@ router.post('/:cartId/product/:productId', (req, res) => {
 });
 
 module.exports = router;
+
+// Obtener el cartId desde la URL
+const cartId = window.location.pathname.split('/').pop(); // Obtiene el último segmento de la URL
+
+const fetchCart = async () => {
+    const response = await fetch(`/api/carts/${cartId}`);
+    const products = await response.json();
+    displayCart(products);
+};
+
+const displayCart = (products) => {
+    const container = document.getElementById('cart-container');
+    container.innerHTML = ''; // Limpiar contenedor
+    products.forEach(product => {
+        const productElement = document.createElement('div');
+        productElement.innerHTML = `
+            <h2>${product.title}</h2>
+            <p>Cantidad: ${product.quantity}</p>
+            <button onclick="removeFromCart('${product.id}')">Eliminar</button>
+        `;
+        container.appendChild(productElement);
+    });
+};
+
+// Función para vaciar el carrito
+const clearCart = async () => {
+    await fetch(`/api/carts/${cartId}`, { method: 'DELETE' });
+    fetchCart(); // Volver a cargar el carrito
+};
+
+// Inicializar la carga del carrito
+fetchCart();
